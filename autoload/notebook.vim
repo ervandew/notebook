@@ -6,6 +6,7 @@ function! notebook#Notebook (tag)
   exec 'set tags=' . g:NotebookDir . '/**/tags'
   try
     exec 'tag ' . a:tag
+    call eclim#taglist#taglisttoo#Taglist(1)
   finally
     let &tags = savetags
   endtry
