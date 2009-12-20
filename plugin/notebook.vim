@@ -5,8 +5,10 @@
 "   file format providing support to search those notes or jump to a specific
 "   tag.
 "
-"   Note: Your notebook file should have the following modeline to ensure that
-"   it can be recognized by this plugin as a notebook file:
+"   Note: This plugin will recognize any txt file in your notebook directory
+"   as a notebook file, but if for some reason it doesn't or you want to use a
+"   different file extension, you can add the following modeline to the end of
+"   your file to force the proper file type:
 "
 "     vim:ft=notebook
 "
@@ -80,6 +82,14 @@ endif
 
 let g:tlist_notebook_settings = {'lang': 'help', 'tags': {'a': 'anchor'}} |
 
+" }}}
+
+" Autocmds {{{
+augroup notebook
+  autocmd!
+  exec 'autocmd BufRead,BufNewFile ' .
+    \ g:NotebookDir . '**/*.txt set filetype=notebook'
+augroup END
 " }}}
 
 " Command Declarations {{{
