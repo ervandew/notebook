@@ -5,7 +5,7 @@
 " }}}
 "
 " License: {{{
-"   Copyright (c) 2008 - 2009, Eric Van Dewoestine
+"   Copyright (c) 2008 - 2010, Eric Van Dewoestine
 "   All rights reserved.
 "
 "   Redistribution and use of this software in source and binary forms, with
@@ -40,10 +40,15 @@
 " }}}
 
 " Notebook(tag) {{{
-function! notebook#Notebook (tag)
+function! notebook#Notebook(tag)
   let savetags = &tags
   exec 'set tags=' . g:NotebookDir . '/**/tags'
   try
+    if &ft != 'notebook' && (
+     \ expand('%') != '' || &modified || line('$') != 1 || getline(1) != '')
+      new
+    endif
+
     exec 'tag ' . a:tag
     if exists('g:EclimHome')
       call eclim#taglist#taglisttoo#Taglist(1)
@@ -54,7 +59,7 @@ function! notebook#Notebook (tag)
 endfunction " }}}
 
 " NotebookUpdateAll() {{{
-function! notebook#NotebookUpdateAll ()
+function! notebook#NotebookUpdateAll()
   let paths = split(glob(g:NotebookDir . '/**/*'), '\n')
   call filter(paths, 'isdirectory(v:val)')
   for path in paths
@@ -64,12 +69,26 @@ function! notebook#NotebookUpdateAll ()
 endfunction " }}}
 
 " NotebookGrep() {{{
-function! notebook#NotebookGrep (args)
-  exec 'vimgrep ' a:args . ' ' . g:NotebookDir . '/**/*.txt'
+function! notebook#NotebookGrep(args)
+  let window = 0
+  if &ft != 'notebook' && (
+   \ expand('%') != '' || &modified || line('$') != 1 || getline(1) != '')
+    let window = 1
+    new
+  endif
+  try
+    exec 'vimgrep ' a:args . ' ' . g:NotebookDir . '/**/*.txt'
+  catch /E480/
+    if window
+      close
+    endif
+    echohl Error | echom v:exception | echohl Normal
+  endtry
+
 endfunction " }}}
 
 " CommandComplete(argLead, cmdLine, cursorPos) {{{
-function! notebook#CommandCompleteTag (argLead, cmdLine, cursorPos)
+function! notebook#CommandCompleteTag(argLead, cmdLine, cursorPos)
   let cmdTail = strpart(a:cmdLine, a:cursorPos)
   let argLead = substitute(a:argLead, cmdTail . '$', '', '')
 
