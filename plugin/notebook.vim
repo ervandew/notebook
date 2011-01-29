@@ -80,7 +80,11 @@ else
   endif
 endif
 
-let g:tlist_notebook_settings = {'lang': 'help', 'tags': {'a': 'anchor'}} |
+let g:tlist_notebook_settings = {
+    \ 'lang': 'help',
+    \ 'parse': 'notebook#ParseTags',
+    \ 'tags': {'a': 'anchor'}
+  \ }
 
 " }}}
 

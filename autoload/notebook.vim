@@ -5,7 +5,7 @@
 " }}}
 "
 " License: {{{
-"   Copyright (c) 2008 - 2010, Eric Van Dewoestine
+"   Copyright (c) 2008 - 2011, Eric Van Dewoestine
 "   All rights reserved.
 "
 "   Redistribution and use of this software in source and binary forms, with
@@ -50,8 +50,8 @@ function! notebook#Notebook(tag)
     endif
 
     exec 'tag ' . a:tag
-    if exists('g:EclimHome')
-      call eclim#taglist#taglisttoo#Taglist(1)
+    if exists(':TlistToo')
+      call taglisttoo#taglist#Taglist(1)
     endif
   finally
     let &tags = savetags
@@ -85,6 +85,13 @@ function! notebook#NotebookGrep(args)
     echohl Error | echom v:exception | echohl Normal
   endtry
 
+endfunction " }}}
+
+" ParseTags(file, settings) {{{
+function! notebook#ParseTags(file, settings)
+  return taglisttoo#util#Parse(a:file, [
+      \ ['a', '\*([^ *]+)\*', 1],
+    \ ])
 endfunction " }}}
 
 " CommandComplete(argLead, cmdLine, cursorPos) {{{
