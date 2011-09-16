@@ -89,7 +89,7 @@ endfunction " }}}
 
 " ParseTags(file, settings) {{{
 function! notebook#ParseTags(file, settings)
-  return taglisttoo#util#Parse(a:file, [
+  return taglisttoo#util#Parse(a:file, a:settings, [
       \ ['a', '\*([^ *]+)\*', 1],
     \ ])
 endfunction " }}}
