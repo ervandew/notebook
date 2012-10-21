@@ -1,11 +1,7 @@
 " Author:  Eric Van Dewoestine
-"
-" Description: {{{
-"   See plugin/notebook.vim for a full description.
-" }}}
-"
+
 " License: {{{
-"   Copyright (c) 2008 - 2011, Eric Van Dewoestine
+"   Copyright (c) 2008 - 2012, Eric Van Dewoestine
 "   All rights reserved.
 "
 "   Redistribution and use of this software in source and binary forms, with
@@ -39,8 +35,38 @@
 "   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 " }}}
 
-" Notebook(tag) {{{
-function! notebook#Notebook(tag)
+function! notebook#Notebook(tag) " {{{
+  " check if notebook dir exists
+  if !isdirectory(g:NotebookDir)
+    let response = input(
+      \ "Notebook directory (" . g:NotebookDir . ") doesn't exist. Create it? (y/n) ")
+    redraw
+    echo ' '
+    if response =~# '^y$'
+      call mkdir(g:NotebookDir, 'p')
+    else
+      return
+    endif
+  endif
+
+  " check if any tags exist
+  let tags = globpath(g:NotebookDir, '**/tags')
+  if (tags == '')
+    let response = input(
+      \ "Notebook directory doesn't have any tags. Create an index file? (y/n) ")
+    redraw
+    echo ' '
+    if response =~# '^y$'
+      exec 'split ' . escape(g:NotebookDir, ' ') . '/index.txt'
+      if !filereadable(g:NotebookDir . '/index.txt')
+        call append(0, ['*index*', '', 'Index for my notes.'])
+        $,$delete _
+      endif
+    endif
+    return
+  endif
+
+  let tag = a:tag != '' ? a:tag : 'index'
   let savetags = &tags
   exec 'set tags=' . g:NotebookDir . '/**/tags'
   try
@@ -49,7 +75,7 @@ function! notebook#Notebook(tag)
       new
     endif
 
-    exec 'tag ' . a:tag
+    exec 'tag ' . tag
     if exists(':TlistToo')
       call taglisttoo#taglist#Taglist(1)
     endif
@@ -58,8 +84,7 @@ function! notebook#Notebook(tag)
   endtry
 endfunction " }}}
 
-" NotebookUpdateAll() {{{
-function! notebook#NotebookUpdateAll()
+function! notebook#NotebookUpdateAll() " {{{
   let paths = split(glob(g:NotebookDir . '/**/*'), '\n')
   call filter(paths, 'isdirectory(v:val)')
   for path in paths
@@ -68,8 +93,7 @@ function! notebook#NotebookUpdateAll()
   echom 'notebook updated.'
 endfunction " }}}
 
-" NotebookGrep() {{{
-function! notebook#NotebookGrep(args)
+function! notebook#NotebookGrep(args) " {{{
   let window = 0
   if &ft != 'notebook' && (
    \ expand('%') != '' || &modified || line('$') != 1 || getline(1) != '')
@@ -87,15 +111,13 @@ function! notebook#NotebookGrep(args)
 
 endfunction " }}}
 
-" ParseTags(file, settings) {{{
-function! notebook#ParseTags(file, settings)
+function! notebook#ParseTags(file, settings) " {{{
   return taglisttoo#util#Parse(a:file, a:settings, [
       \ ['a', '\*([^ *]+)\*', 1],
     \ ])
 endfunction " }}}
 
-" CommandComplete(argLead, cmdLine, cursorPos) {{{
-function! notebook#CommandCompleteTag(argLead, cmdLine, cursorPos)
+function! notebook#CommandCompleteTag(argLead, cmdLine, cursorPos) " {{{
   let cmdTail = strpart(a:cmdLine, a:cursorPos)
   let argLead = substitute(a:argLead, cmdTail . '$', '', '')
 

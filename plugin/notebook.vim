@@ -1,5 +1,5 @@
 " Author:  Eric Van Dewoestine
-"
+
 " Description: {{{
 "   Plugin which allows you to organize sets of notes using vim's simple help
 "   file format providing support to search those notes or jump to a specific
@@ -34,9 +34,9 @@
 "   Then I can lookup notes on git using:
 "     :Notebook git
 " }}}
-"
+
 " License: {{{
-"   Copyright (c) 2008 - 2009, Eric Van Dewoestine
+"   Copyright (c) 2008 - 2012, Eric Van Dewoestine
 "   All rights reserved.
 "
 "   Redistribution and use of this software in source and binary forms, with
@@ -78,6 +78,7 @@ else
   if g:NotebookDir =~ '/$'
     let g:NotebookDir = g:NotebookDir[:-2]
   endif
+  let g:NotebookDir = expand(g:NotebookDir)
 endif
 
 let g:tlist_notebook_settings = {
@@ -99,7 +100,7 @@ augroup END
 " Command Declarations {{{
 
 if !exists(':Notebook')
-  command -nargs=1 -complete=customlist,notebook#CommandCompleteTag
+  command -nargs=* -complete=customlist,notebook#CommandCompleteTag
     \ Notebook :call notebook#Notebook('<args>')
 endif
 if !exists(':NotebookUpdateAll')
