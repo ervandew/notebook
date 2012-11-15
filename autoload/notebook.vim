@@ -76,9 +76,6 @@ function! notebook#Notebook(tag) " {{{
     endif
 
     exec 'tag ' . tag
-    if exists(':TlistToo')
-      call taglisttoo#taglist#Taglist(1)
-    endif
   finally
     let &tags = savetags
   endtry
