@@ -1,7 +1,7 @@
 " Author:  Eric Van Dewoestine
 
 " License: {{{
-"   Copyright (c) 2008 - 2012, Eric Van Dewoestine
+"   Copyright (c) 2008 - 2015, Eric Van Dewoestine
 "   All rights reserved.
 "
 "   Redistribution and use of this software in source and binary forms, with
@@ -123,7 +123,7 @@ function! notebook#CommandCompleteTag(argLead, cmdLine, cursorPos) " {{{
   try
     let results = taglist(argLead . '.*')
     call map(results, "v:val['name']")
-    return results
+    return uniq(results)
   finally
     let &tags = savetags
   endtry
